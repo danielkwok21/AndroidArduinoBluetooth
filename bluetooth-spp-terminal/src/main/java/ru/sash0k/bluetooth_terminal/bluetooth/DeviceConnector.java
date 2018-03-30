@@ -62,9 +62,6 @@ public class DeviceConnector {
     // ==========================================================================
 
 
-    /**
-     * Запрос на соединение с устойством
-     */
     public synchronized void connect() {
         if (D) Log.d(TAG, "connect to: " + connectedDevice);
 
@@ -89,9 +86,6 @@ public class DeviceConnector {
     }
     // ==========================================================================
 
-    /**
-     * Завершение соединения
-     */
     public synchronized void stop() {
         if (D) Log.d(TAG, "stop");
 
@@ -112,11 +106,6 @@ public class DeviceConnector {
     // ==========================================================================
 
 
-    /**
-     * Установка внутреннего состояния устройства
-     *
-     * @param state - состояние
-     */
     private synchronized void setState(int state) {
         if (D) Log.d(TAG, "setState() " + mState + " -> " + state);
         mState = state;
@@ -125,9 +114,6 @@ public class DeviceConnector {
     // ==========================================================================
 
 
-    /**
-     * Получение состояния устройства
-     */
     public synchronized int getState() {
         return mState;
     }
@@ -202,9 +188,6 @@ public class DeviceConnector {
     // ==========================================================================
 
 
-    /**
-     * Класс потока для соединения с BT-устройством
-     */
     // ==========================================================================
     private class ConnectThread extends Thread {
         private static final String TAG = "ConnectThread";
@@ -217,13 +200,12 @@ public class DeviceConnector {
             if (D) Log.d(TAG, "create ConnectThread");
             mmDevice = device;
             mmSocket = BluetoothUtils.createRfcommSocket(mmDevice);
+
         }
         // ==========================================================================
 
-        /**
-         * Основной рабочий метод для соединения с устройством.
-         * При успешном соединении передаёт управление другому потоку
-         */
+
+
         public void run() {
             if (D) Log.d(TAG, "ConnectThread run");
             btAdapter.cancelDiscovery();
@@ -238,6 +220,7 @@ public class DeviceConnector {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
                 mmSocket.connect();
+                Log.d(TAG, "mmSocket connected");
             } catch (IOException e) {
                 // Close the socket
                 try {
@@ -260,9 +243,6 @@ public class DeviceConnector {
         // ==========================================================================
 
 
-        /**
-         * Отмена соединения
-         */
         public void cancel() {
             if (D) Log.d(TAG, "ConnectThread cancel");
 
@@ -281,9 +261,6 @@ public class DeviceConnector {
     // ==========================================================================
 
 
-    /**
-     * Класс потока для обмена данными с BT-устройством
-     */
     // ==========================================================================
     private class ConnectedThread extends Thread {
         private static final String TAG = "ConnectedThread";
@@ -294,7 +271,7 @@ public class DeviceConnector {
         private final OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
-            if (D) Log.d(TAG, "create ConnectedThread");
+            Log.d(TAG, "create ConnectedThread");
 
             mmSocket = socket;
             InputStream tmpIn = null;
@@ -304,8 +281,9 @@ public class DeviceConnector {
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
+                Log.d(TAG, "tmpIn and tmpOut are created");
             } catch (IOException e) {
-                if (D) Log.e(TAG, "temp sockets not created", e);
+                Log.e(TAG, "temp sockets not created", e);
             }
 
             mmInStream = tmpIn;
@@ -313,22 +291,23 @@ public class DeviceConnector {
         }
         // ==========================================================================
 
-        /**
-         * Основной рабочий метод - ждёт входящих команд от потока
-         */
+
         public void run() {
-            if (D) Log.i(TAG, "ConnectedThread run");
+            Log.d(TAG, "ConnectedThread run");
             byte[] buffer = new byte[512];
             int bytes;
             StringBuilder readMessage = new StringBuilder();
             while (true) {
                 try {
-                    // считываю входящие данные из потока и собираю в строку ответа
-                    bytes = mmInStream.read(buffer);
+
+                    Log.d(TAG, "reading buffer...");
+                    bytes = mmInStream.read(buffer);        //spiderman
+                    Log.d(TAG, "bytes: "+bytes);
+
                     String readed = new String(buffer, 0, bytes);
                     readMessage.append(readed);
 
-                    // маркер конца команды - вернуть ответ в главный поток
+                    Log.d(TAG, "run: "+readMessage);
                     if (readed.contains("\n")) {
                         mHandler.obtainMessage(DeviceControlActivity.MESSAGE_READ, bytes, -1, readMessage.toString()).sendToTarget();
                         readMessage.setLength(0);
