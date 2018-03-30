@@ -36,6 +36,7 @@ public final class DeviceControlActivity extends BaseActivity {
     private static final String DEVICE_NAME = "DEVICE_NAME";
     private static final String TAG = "DeviceControlActivity";
     private static final String LOG = "LOG";
+    private static final String campur = "campur campur";
 
     private static final String CRC_OK = "#FFFF00";
     private static final String CRC_BAD = "#FF0000";
@@ -50,7 +51,8 @@ public final class DeviceControlActivity extends BaseActivity {
     private static BluetoothResponseHandler mHandler;
 
     private StringBuilder logHtml;
-    private TextView logTextView;
+    private TextView outputTextView;
+    private TextView inputTextView;
     private EditText commandEditText;
 
     // Настройки приложения
@@ -80,11 +82,16 @@ public final class DeviceControlActivity extends BaseActivity {
         this.logHtml = new StringBuilder();
         if (savedInstanceState != null) this.logHtml.append(savedInstanceState.getString(LOG));
 
-        this.logTextView = (TextView) findViewById(R.id.log_textview);
-        this.logTextView.setMovementMethod(new ScrollingMovementMethod());
-        this.logTextView.setText(Html.fromHtml(logHtml.toString()));
+        this.outputTextView = (TextView) findViewById(R.id.outputTextView);
+        this.outputTextView.setMovementMethod(new ScrollingMovementMethod());
+        this.outputTextView.setText(Html.fromHtml(logHtml.toString()));
+
+        this.inputTextView = (TextView) findViewById(R.id.inputTextView);
+        this.inputTextView.setMovementMethod(new ScrollingMovementMethod());
+        this.inputTextView.setText(campur);
 
         this.commandEditText = (EditText) findViewById(R.id.command_edittext);
+
         // soft-keyboard send button
         this.commandEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -96,6 +103,7 @@ public final class DeviceControlActivity extends BaseActivity {
                 return false;
             }
         });
+
         // hardware Enter button
         this.commandEditText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -118,7 +126,7 @@ public final class DeviceControlActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(DEVICE_NAME, deviceName);
-        if (logTextView != null) {
+        if (outputTextView != null) {
             outState.putString(LOG, logHtml.toString());
         }
     }
@@ -182,12 +190,15 @@ public final class DeviceControlActivity extends BaseActivity {
                 return true;
 
             case R.id.menu_clear:
-                if (logTextView != null) logTextView.setText("");
+                if (outputTextView != null) outputTextView.setText("");
                 return true;
 
+                //send button pressed
             case R.id.menu_send:
-                if (logTextView != null) {
-                    final String msg = logTextView.getText().toString();
+
+                //displays sent message onto device
+                if (outputTextView != null) {
+                    final String msg = outputTextView.getText().toString();
                     final Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_TEXT, msg);
@@ -342,12 +353,18 @@ public final class DeviceControlActivity extends BaseActivity {
                 .append("<br>");
 
         logHtml.append(msg);
-        logTextView.append(Html.fromHtml(msg.toString()));
+        outputTextView.append(Html.fromHtml(msg.toString()));
+        inputTextView.append(campur);
 
-        final int scrollAmount = logTextView.getLayout().getLineTop(logTextView.getLineCount()) - logTextView.getHeight();
-        if (scrollAmount > 0)
-            logTextView.scrollTo(0, scrollAmount);
-        else logTextView.scrollTo(0, 0);
+        final int scrollAmount = outputTextView.getLayout().getLineTop(outputTextView.getLineCount()) - outputTextView.getHeight();
+        if (scrollAmount > 0){
+            outputTextView.scrollTo(0, scrollAmount);
+            inputTextView.scrollTo(0, scrollAmount);
+        }
+        else{
+            outputTextView.scrollTo(0, 0);
+            inputTextView.scrollTo(0, 0);
+        }
 
         if (clean) commandEditText.setText("");
     }

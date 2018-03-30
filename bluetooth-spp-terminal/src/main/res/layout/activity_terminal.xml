@@ -29,11 +29,20 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/log_textview"
+        android:id="@+id/outputTextView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="233dp"
         android:clickable="false"
         android:enabled="true"
         android:scrollbars="vertical"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/inputTextView"
+        android:layout_width="match_parent"
+        android:layout_height="233dp"
+        android:clickable="false"
+        android:enabled="true"
+        android:scrollbars="vertical"
+        android:textColor="@android:color/white" />
 </LinearLayout>
