@@ -260,6 +260,16 @@ public class DeviceConnector {
     }
     // ==========================================================================
 
+    //spiderman
+    private String ArduinoInput;
+
+    public String getArduinoInputs(){
+        return ArduinoInput;
+    }
+
+    public void setArduinoInputs(StringBuilder input){
+        ArduinoInput = input.toString();
+    }
 
     // ==========================================================================
     private class ConnectedThread extends Thread {
@@ -292,11 +302,12 @@ public class DeviceConnector {
         // ==========================================================================
 
 
+
         public void run() {
             Log.d(TAG, "ConnectedThread run");
             byte[] buffer = new byte[512];
             int bytes;
-            StringBuilder readMessage = new StringBuilder();
+            StringBuilder input = new StringBuilder();
             while (true) {
                 try {
 
@@ -305,12 +316,13 @@ public class DeviceConnector {
                     Log.d(TAG, "bytes: "+bytes);
 
                     String readed = new String(buffer, 0, bytes);
-                    readMessage.append(readed);
+                    input.append(readed);
+                    setArduinoInputs(input);
 
-                    Log.d(TAG, "run: "+readMessage);
+                    Log.d(TAG, "run: "+input);
                     if (readed.contains("\n")) {
-                        mHandler.obtainMessage(DeviceControlActivity.MESSAGE_READ, bytes, -1, readMessage.toString()).sendToTarget();
-                        readMessage.setLength(0);
+                        mHandler.obtainMessage(DeviceControlActivity.MESSAGE_READ, bytes, -1, input.toString()).sendToTarget();
+                        input.setLength(0);
                     }
 
                 } catch (IOException e) {

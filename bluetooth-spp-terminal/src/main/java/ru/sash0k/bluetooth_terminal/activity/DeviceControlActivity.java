@@ -88,7 +88,6 @@ public final class DeviceControlActivity extends BaseActivity {
 
         this.inputTextView = (TextView) findViewById(R.id.inputTextView);
         this.inputTextView.setMovementMethod(new ScrollingMovementMethod());
-        this.inputTextView.setText(campur);
 
         this.commandEditText = (EditText) findViewById(R.id.command_edittext);
 
@@ -354,7 +353,9 @@ public final class DeviceControlActivity extends BaseActivity {
 
         logHtml.append(msg);
         outputTextView.append(Html.fromHtml(msg.toString()));
-        inputTextView.append(campur);
+        String ArduinoInputs;
+        ArduinoInputs = connector.getArduinoInputs();
+        inputTextView.append(ArduinoInputs);
 
         final int scrollAmount = outputTextView.getLayout().getLineTop(outputTextView.getLineCount()) - outputTextView.getHeight();
         if (scrollAmount > 0){
