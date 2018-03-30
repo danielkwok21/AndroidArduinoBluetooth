@@ -1,0 +1,1 @@
+Using source code of a bluetoth terminal app to establish connection between device and arduino
