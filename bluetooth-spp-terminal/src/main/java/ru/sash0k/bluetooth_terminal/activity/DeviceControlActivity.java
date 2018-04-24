@@ -126,11 +126,13 @@ public final class DeviceControlActivity extends BaseActivity {
 
 
     private boolean isConnected() {
+        Log.d(TAG, "connected");
         return (connector != null) && (connector.getState() == DeviceConnector.STATE_CONNECTED);
     }
     // ==========================================================================
 
     private void stopConnection() {
+        Log.d(TAG, "stop");
         if (connector != null) {
             connector.stop();
             connector = null;
@@ -140,6 +142,7 @@ public final class DeviceControlActivity extends BaseActivity {
     // ==========================================================================
 
     private void startDeviceListActivity() {
+        Log.d(TAG, "startDeviceListActivity");
         stopConnection();
         Intent serverIntent = new Intent(this, DeviceListActivity.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
@@ -149,6 +152,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
     @Override
     public boolean onSearchRequested() {
+        Log.d(TAG, "onSearchRequested");
         if (super.isAdapterReady()) startDeviceListActivity();
         return false;
     }
@@ -157,6 +161,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
         getMenuInflater().inflate(R.menu.device_control_activity, menu);
         final MenuItem bluetooth = menu.findItem(R.id.menu_search);
         if (bluetooth != null) bluetooth.setIcon(this.isConnected() ?
@@ -169,6 +174,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected");
         switch (item.getItemId()) {
 
             case R.id.menu_search:
@@ -209,6 +215,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart");
         super.onStart();
 
         // hex mode
@@ -272,6 +279,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
 
     private void setupConnector(BluetoothDevice connectedDevice) {
+        Log.d(TAG, "setupConnector");
         stopConnection();
         try {
             String emptyName = getString(R.string.empty_device_name);
@@ -286,6 +294,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
 
     public void sendCommand(View view) {
+        Log.d(TAG, "sendCommand");
         if (commandEditText != null) {
             String commandString = commandEditText.getText().toString();
 
@@ -315,6 +324,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
 
     void appendLog(String message, boolean hexMode, boolean outgoing, boolean clean) {
+        Log.d(TAG, "sendCommand");
 
         StringBuilder msg = new StringBuilder();
         if (show_timings) msg.append("[").append(timeformat.format(new Date())).append("]");
@@ -342,6 +352,7 @@ public final class DeviceControlActivity extends BaseActivity {
                 .append("<br>");
 
         logHtml.append(msg);
+        Log.d(TAG, "msg: "+msg);
         logTextView.append(Html.fromHtml(msg.toString()));
 
         final int scrollAmount = logTextView.getLayout().getLineTop(logTextView.getLineCount()) - logTextView.getHeight();
